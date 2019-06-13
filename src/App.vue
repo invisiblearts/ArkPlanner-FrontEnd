@@ -8,14 +8,15 @@ div#app
                 el-card(v-for="material in materialList" v-bind:key='material.id' :class='`rarity-` + material.rarity')
                     div(slot='header' class='clearfix' style='display: flex; align-items: center;')
                         img(:src='material.iconPath')
-                        span(style='margin-left: 10px;') {{material.name}}
+                        span(style='margin-left: 10px; font-size: 18px;') {{material.name}}
                     div
                         div(style="display: inline-block;") 需要#[el-input-number(v-model='material.required' :min='0' size='small') ]
                         div(style="display: inline-block;") 已有#[el-input-number(v-model='material.owned'  :min='0' size='small')]
 
         el-footer
             arkplanner-footer
-        el-button(type="primary" icon="el-icon-s-data" circle id="analyze" @click='analyze')
+        el-button(type="primary" icon="el-icon-data-analysis" circle id="analyze" @click='analyze')
+        el-button(icon="el-icon-more" circle id="importOrExport" @click='toggleImportOrExport')
 
         el-dialog(:title='`预计需要体力: ` + cost' :visible.sync="resultVisible" width="80%")
             el-tabs(v-model="activeResult")
@@ -25,6 +26,11 @@ div#app
                 el-tab-pane(label='合成列表' name='syntheses')
                     p(v-for="synthesis in syntheses") #[b {{synthesis.target}}]({{synthesis.count}}): 
                         span(v-for="key in Object.keys(synthesis.materials)") #[b {{key}}]({{synthesis.materials[key]}}) 
+        
+        el-dialog(title='导入/导出' :visible.sync="ioVisible" width="80%")
+            el-tabs(v-model="activeIO")
+                el-tab-pane(label='导入' name='importJSON') Pending Implementation
+                el-tab-pane(label='导出' name='exportJSON') Pending Implementation
 
 
 </template>
@@ -69,26 +75,34 @@ export default class App extends Vue {
     public materialList = getMaterialsList().sort((a: Material, b: Material) =>  b.rarity - a.rarity);
     public cost = 0;
 
+    public ioVisible = false;
+    public activeIO = 'importJSON';
+
     public resultVisible = false;
     public activeResult = 'stagesList';
 
-    public stages: any = [{stage: 'placeholder', count: 0, items: []}];
+    public stages: any = [];
     public syntheses: any = [];
 
     public analyze() {
         const req = new XMLHttpRequest();
-        req.open('POST', 'https://ak.inva.land/plan/', false);
+        req.open('POST', 'https://ak.inva.land/plan/', true);
         req.setRequestHeader('Content-Type', 'application/json');
+        req.onreadystatechange = () => {
+            const result = JSON.parse(req.responseText);
+            this.cost = result.cost;
+            this.stages = result.stages;
+            this.syntheses = result.syntheses;
+            this.resultVisible = true;
+        };
         req.send(JSON.stringify(assemblePostData(this.materialList)));
-        const result = JSON.parse(req.responseText);
-        this.cost = result.cost;
-        this.stages = result.stages;
-        this.syntheses = result.syntheses;
-        this.resultVisible = true;
-        console.log(this.stages);
     }
 
+    public toggleImportOrExport() {
 
+
+        this.ioVisible = true;
+    }
 }
 </script>
 
@@ -139,4 +153,12 @@ body
     font-size 40px
     z-index 100
     box-shadow 2px 1px 1px rgb(217, 236, 255)
+#importOrExport
+    position fixed
+    right 35px
+    bottom 120px
+    font-size 20px
+    z-index 100
+    box-shadow 2px 1px 1px rgb(217, 236, 255)
+
 </style>

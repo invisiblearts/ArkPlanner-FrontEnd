@@ -2,7 +2,7 @@
 div
     span(style='font-size: 150%;') ArkPlanner
     span(style="float: right;")
-        a(href='https://www.github.com/invisiblearts') GitHub
+        a(href='https://github.com/invisiblearts/ArkPlanner-FrontEnd') GitHub
 </template>
 
 
