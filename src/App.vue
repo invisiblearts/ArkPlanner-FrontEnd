@@ -5,6 +5,8 @@ div#app
             arkplanner-header
         el-main
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
+                el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物' inactive-text='忽略')
+            el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
                 el-card(v-for="material in materialList" v-bind:key='material.id' :class='`rarity-` + material.rarity')
                     div(slot='header' class='clearfix' style='display: flex; align-items: center;')
                         img(:src='material.iconPath')
@@ -26,6 +28,9 @@ div#app
                 el-tab-pane(label='合成列表' name='syntheses')
                     p(v-for="synthesis in syntheses") #[b {{synthesis.target}}]({{synthesis.count}}): 
                         span(v-for="key in Object.keys(synthesis.materials)") #[b {{key}}]({{synthesis.materials[key]}}) 
+                el-tab-pane(label='素材价值' name='itmvalues')
+                    p(v-for='group in itmvalues') 素材等级#[b {{group.level}}]: <br/>
+                        span(v-for='value in group.values') {{value.item}}(#[b {{value.value}}]) 
         
         el-dialog(title='导入/导出' :visible.sync="ioVisible" width="80%")
             el-tabs(v-model="activeIO")
@@ -39,16 +44,16 @@ div#app
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ArkplannerHeader from './components/Header.vue';
-
 import ArkplannerFooter from './components/Footer.vue';
 import HelloWorld from './components/HelloWorld.vue';
 
 import getMaterialsList, { Material } from './Material';
 
-const assemblePostData = (materialList: Material[]) => {
+const assemblePostData = (materialList: Material[], extra_outc_bool: any) => {
     const obj = {
         required: {},
         owned: {},
+        extra_outc: extra_outc_bool,
     };
 
     for (const material of materialList) {
@@ -77,30 +82,31 @@ export default class App extends Vue {
 
     public ioVisible = false;
     public activeIO = 'importJSON';
+    public extra_outc_bool = true;
 
     public resultVisible = false;
     public activeResult = 'stagesList';
 
     public stages: any = [];
     public syntheses: any = [];
+    public itmvalues: any = [];
 
     public analyze() {
         const req = new XMLHttpRequest();
-        req.open('POST', 'https://ak.inva.land/plan/', true);
+        req.open('POST', 'plan/', false);
         req.setRequestHeader('Content-Type', 'application/json');
         req.onreadystatechange = () => {
             const result = JSON.parse(req.responseText);
             this.cost = result.cost;
             this.stages = result.stages;
             this.syntheses = result.syntheses;
+            this.itmvalues = result.values;
             this.resultVisible = true;
         };
-        req.send(JSON.stringify(assemblePostData(this.materialList)));
+        req.send(JSON.stringify(assemblePostData(this.materialList, this.extra_outc_bool)));
     }
 
     public toggleImportOrExport() {
-
-
         this.ioVisible = true;
     }
 }
