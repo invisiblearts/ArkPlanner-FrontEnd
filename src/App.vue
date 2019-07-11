@@ -5,9 +5,12 @@ div#app
             arkplanner-header
         el-main
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
-                el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物    ')
-                el-switch(v-model='exp_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求经验    ')
-                el-switch(v-model='gold_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求龙门币    ')
+                div(style="margin: 10px")
+                    el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物    ')
+                div(style="margin: 10px")
+                    el-switch(v-model='exp_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求经验    ')
+                div(style="margin: 10px")
+                    el-switch(v-model='gold_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求龙门币    ')
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
                 el-card(v-for="material in materialList" v-bind:key='material.id' :class='`rarity-` + material.rarity')
                     div(slot='header' class='clearfix' style='display: flex; align-items: center;')
@@ -28,6 +31,7 @@ div#app
                     p(v-for='_stage in stages') #[b {{_stage.stage}}]: {{_stage.count}} 次，获得 
                         span(v-for='key in Object.keys(_stage.items)') #[b {{key}}]({{_stage.items[key]}}) 
                 el-tab-pane(label='合成列表' name='syntheses')
+                    p(v-if="extra_outc_bool") 由于考虑了合成副产物的产出，可能会出现提示合成你不需要的材料的情况，在需求量较小的时候建议关闭合成副产物
                     p(v-for="synthesis in syntheses") #[b {{synthesis.target}}]({{synthesis.count}}): 
                         span(v-for="key in Object.keys(synthesis.materials)") #[b {{key}}]({{synthesis.materials[key]}}) 
                 el-tab-pane(label='素材价值' name='itmvalues')
@@ -99,7 +103,7 @@ export default class App extends Vue {
 
     public analyze() {
         const req = new XMLHttpRequest();
-        req.open('POST', 'plan/', false);
+        req.open('POST', 'plan/', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.onreadystatechange = () => {
             const result = JSON.parse(req.responseText);
