@@ -5,7 +5,9 @@ div#app
             arkplanner-header
         el-main
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
-                el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物' inactive-text='忽略')
+                el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物    ')
+                el-switch(v-model='exp_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求经验    ')
+                el-switch(v-model='gold_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求龙门币    ')
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
                 el-card(v-for="material in materialList" v-bind:key='material.id' :class='`rarity-` + material.rarity')
                     div(slot='header' class='clearfix' style='display: flex; align-items: center;')
@@ -49,11 +51,13 @@ import HelloWorld from './components/HelloWorld.vue';
 
 import getMaterialsList, { Material } from './Material';
 
-const assemblePostData = (materialList: Material[], extra_outc_bool: any) => {
+const assemblePostData = (materialList: Material[], extra_outc_bool: any, exp_demand_bool: any, gold_demand_bool: any) => {
     const obj = {
         required: {},
         owned: {},
         extra_outc: extra_outc_bool,
+        exp_demand: exp_demand_bool,
+        gold_demand: gold_demand_bool,
     };
 
     for (const material of materialList) {
@@ -82,7 +86,9 @@ export default class App extends Vue {
 
     public ioVisible = false;
     public activeIO = 'importJSON';
-    public extra_outc_bool = true;
+    public extra_outc_bool = false;
+    public exp_demand_bool = true;
+    public gold_demand_bool = true;
 
     public resultVisible = false;
     public activeResult = 'stagesList';
@@ -103,7 +109,7 @@ export default class App extends Vue {
             this.itmvalues = result.values;
             this.resultVisible = true;
         };
-        req.send(JSON.stringify(assemblePostData(this.materialList, this.extra_outc_bool)));
+        req.send(JSON.stringify(assemblePostData(this.materialList, this.extra_outc_bool, this.exp_demand_bool, this.gold_demand_bool)));
     }
 
     public toggleImportOrExport() {
