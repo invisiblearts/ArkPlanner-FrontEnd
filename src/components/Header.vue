@@ -1,17 +1,15 @@
 <template lang="pug">
 div
-    span(style='font-size: 150%;') ArkPlanner
+    span(style='font-size: 150%;') ArkPlanner @ Penguin-Stats
     span(style="float: right;")
-        a(href='https://github.com/invisiblearts/ArkPlanner-FrontEnd') GitHub
+        a(href='https://penguin-stats.io/') 企鹅物流
 </template>
 
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-
 @Component
 export default class ArkplannerHeader extends Vue {
-
 }
 </script>
 
@@ -19,7 +17,6 @@ export default class ArkplannerHeader extends Vue {
 a
     color: white
     text-decoration: none
-
 a:hover 
     color: rgb(217, 236, 255);
 </style>
