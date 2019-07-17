@@ -5,9 +5,12 @@ div#app
             arkplanner-header
         el-main
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
-                el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物    ')
-                el-switch(v-model='exp_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求经验    ')
-                el-switch(v-model='gold_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求龙门币    ')
+                div(style="margin: 10px")
+                    el-switch(v-model='extra_outc_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='计算合成副产物')
+                div(style="margin: 10px")
+                    el-switch(v-model='exp_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求经验')
+                div(style="margin: 10px")
+                    el-switch(v-model='gold_demand_bool' active-color='#13ce66' inactive-color='#e0e0e0' active-text='大量需求龙门币')
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
                 el-card(v-for="material in materialList" v-bind:key='material.id' :class='`rarity-` + material.rarity')
                     div(slot='header' class='clearfix' style='display: flex; align-items: center;')
@@ -25,9 +28,11 @@ div#app
         el-dialog(:title='`预计需要体力: ` + cost' :visible.sync="resultVisible" width="80%")
             el-tabs(v-model="activeResult")
                 el-tab-pane(label='关卡列表' name='stagesList')
+                    p() 共计获得#[b 龙门币] {{gold}} 以及价值 {{exp}} EXP 的#[b 录像带]
                     p(v-for='_stage in stages') #[b {{_stage.stage}}]: {{_stage.count}} 次，获得 
                         span(v-for='key in Object.keys(_stage.items)') #[b {{key}}]({{_stage.items[key]}}) 
                 el-tab-pane(label='合成列表' name='syntheses')
+                    p(v-if="extra_outc_bool") 由于考虑了合成副产物的产出，可能会出现提示合成不需要的材料，在需求量较小的时候建议关闭合成副产物
                     p(v-for="synthesis in syntheses") #[b {{synthesis.target}}]({{synthesis.count}}): 
                         span(v-for="key in Object.keys(synthesis.materials)") #[b {{key}}]({{synthesis.materials[key]}}) 
                 el-tab-pane(label='素材价值' name='itmvalues')
@@ -36,8 +41,14 @@ div#app
         
         el-dialog(title='导入/导出' :visible.sync="ioVisible" width="80%")
             el-tabs(v-model="activeIO")
-                el-tab-pane(label='导入' name='importJSON') Pending Implementation
-                el-tab-pane(label='导出' name='exportJSON') Pending Implementation
+                el-tab-pane(label='导入' name='importJSON') 
+                    div(style="margin: 10px") 
+                        el-input(v-model='materialJSON' type='textarea' :rows='5' placeholder='[{"name":"双极纳米片","need":4,"have":0},{"name":"D32钢","need":4,"have":0}...]')
+                    div(style="margin: 10px") 
+                        el-button(type="primary" plain @click='applyJSON') 导入
+                el-tab-pane(label='导出' name='exportJSON') 
+                    div(style="margin: 10px")
+                        el-input(v-model='materialExportJSON' type='textarea' :rows='5' readonly=true)
 
 
 </template>
@@ -82,7 +93,11 @@ const assemblePostData = (materialList: Material[], extra_outc_bool: any, exp_de
 })
 export default class App extends Vue {
     public materialList = getMaterialsList().sort((a: Material, b: Material) =>  b.rarity - a.rarity);
+    public materialJSON = '';
+    public materialExportJSON = '';
     public cost = 0;
+    public gold = 0;
+    public exp = 0;
 
     public ioVisible = false;
     public activeIO = 'importJSON';
@@ -97,13 +112,34 @@ export default class App extends Vue {
     public syntheses: any = [];
     public itmvalues: any = [];
 
+    public applyJSON() {
+        const materialImportList = JSON.parse(this.materialJSON);
+        let required_map: { [key: string]: number; } = {};
+        let owned_map: { [key: string]: number; } = {};
+
+        for (let materialImport of materialImportList) {
+            required_map[materialImport.name] = materialImport.need;
+            owned_map[materialImport.name] = materialImport.have;
+        }
+
+        for (let material of this.materialList) {
+            if (material.name in owned_map) {
+                material.owned = owned_map[material.name];
+                material.required = required_map[material.name];
+            }
+        }
+        this.ioVisible = false;
+    }
+
     public analyze() {
         const req = new XMLHttpRequest();
-        req.open('POST', 'plan/', false);
+        req.open('POST', 'plan/', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.onreadystatechange = () => {
             const result = JSON.parse(req.responseText);
             this.cost = result.cost;
+            this.gold = result.gold;
+            this.exp = result.exp;
             this.stages = result.stages;
             this.syntheses = result.syntheses;
             this.itmvalues = result.values;
@@ -113,6 +149,14 @@ export default class App extends Vue {
     }
 
     public toggleImportOrExport() {
+        let materialExportList = [];
+        for (let material of this.materialList) {
+            if (material.required > 0 || material.owned > 0) {
+                let materialExport: { [key: string]: any; } = {'name':material.name, 'need':material.required, 'have':material.owned};
+                materialExportList.push(materialExport);
+            }
+        }
+        this.materialExportJSON = JSON.stringify(materialExportList);
         this.ioVisible = true;
     }
 }
