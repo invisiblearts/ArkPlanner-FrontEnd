@@ -173,9 +173,9 @@ body
     padding-left 15% !important
     font-weight lighter
     color white
-    background-color #409EFF
+    background-color #001429
     width 100%
-    line-height 60px
+    line-height 55px
 
 .el-main
     padding 0 !important
