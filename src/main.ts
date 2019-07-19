@@ -2,7 +2,8 @@ import Vue from 'vue';
 import App from './App.vue';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-const VueAnalytics = require('vue-analytics').default
+// const VueAnalytics = require('vue-analytics').default
+import VueAnalytics from 'vue-analytics';
 
 Vue.use(ElementUI);
 Vue.use(VueAnalytics, {

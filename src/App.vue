@@ -63,8 +63,14 @@ div#app
             div(style="margin: 20px") 
                 p() 用户量激增，服务器月费上涨，企鹅数据的运营陷入了危机。站长红白为了保护喜爱的企鹅数据而决定成为偶像...
             el-row(style="display: flex; flex-wrap: wrap; justify-content: center;")
-                div(style="margin: 20px") 
-                    el-button(type="primary" plain @click='costume') 我知道了,会准备好钱包。
+                div(style="margin: 10px") 
+                    el-popover(placement="top-start" trigger="click" content="龙门币+1000，红白女装指日可待。") 
+                        el-button(slot="reference" @click='donate') 贡献1000龙门币
+                div(style="margin: 10px") 
+                    el-popover(placement="top-start" trigger="click" content="龙门币+1800，红白女装指日可待。") 
+                        el-button(slot="reference" @click='donate') 贡献100信用点数
+                div(style="margin: 10px") 
+                    el-button(type="primary" plain @click='costume') 我知道了
 
 
 
@@ -143,6 +149,13 @@ export default class App extends Vue {
             });
         }
         this.cosVisible = !this.cosVisible
+    }
+
+    public donate() {
+        this.$ga.event({
+                eventCategory: 'costume',
+                eventAction: 'donate',
+            });
     }
 
     public applyJSON() {

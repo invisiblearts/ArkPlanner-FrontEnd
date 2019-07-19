@@ -18,7 +18,8 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      "vue-analytics": ["src/types/vue-analytics"],
     },
     "lib": [
       "esnext",
@@ -27,6 +28,7 @@
       "scripthost"
     ]
   },
+
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
@@ -34,7 +36,9 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
+  
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }
