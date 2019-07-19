@@ -79,8 +79,6 @@ import ArkplannerFooter from './components/Footer.vue';
 import HelloWorld from './components/HelloWorld.vue';
 import * as fullyJSON from './assets/fully_required.json';
 
-
-const VueAnalytics = require('vue-analytics').default;
 Vue.use(VueAnalytics, {
   id: 'UA-144114297-1',
   autoTracking: {
