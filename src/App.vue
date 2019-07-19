@@ -73,18 +73,13 @@ div#app
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import VueAnalytics from 'vue-analytics';
 import ArkplannerHeader from './components/Header.vue';
 import ArkplannerFooter from './components/Footer.vue';
 import HelloWorld from './components/HelloWorld.vue';
 import * as fullyJSON from './assets/fully_required.json';
 
-Vue.use(VueAnalytics, {
-  id: 'UA-144114297-1',
-  autoTracking: {
-    screenview: true
-  }
-})
+import getMaterialsList, { Material } from './Material';
+
 
 const assemblePostData = (materialList: Material[], extra_outc_bool: any, exp_demand_bool: any, gold_demand_bool: any) => {
     const obj = {
@@ -151,7 +146,7 @@ export default class App extends Vue {
     }
 
     public applyJSON() {
-        this.$ua.event({
+        this.$ga.event({
             eventCategory: 'import',
             eventAction: 'click',
             })
@@ -174,7 +169,7 @@ export default class App extends Vue {
     }
 
     public applyFullyRequired() {
-        Vue.analytics.event({
+        this.$ga.event({
             eventCategory: 'fullyRequired',
             eventAction: 'click',
             })
@@ -197,7 +192,7 @@ export default class App extends Vue {
 
     public analyze() {
         this.isLoading = true;
-        Vue.ga.event({
+        this.$ga.event({
             eventCategory: 'analyze',
             eventAction: 'click',
             })
