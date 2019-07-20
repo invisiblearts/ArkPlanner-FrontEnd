@@ -1,8 +1,8 @@
 <template lang="pug">
 div
-    span(style='font-size: 150%;') ArkPlanner
+    span(style='font-size: 150%;') ArkPlanner Vanilla
     span(style="float: right;")
-        a(href='https://github.com/invisiblearts/ArkPlanner-FrontEnd') GitHub
+        a(href='https://planner.penguin-stats.io/') ArkPlanner @ 企鹅物流
 </template>
 
 
