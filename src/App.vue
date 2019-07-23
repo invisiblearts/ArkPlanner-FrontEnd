@@ -26,11 +26,12 @@ div#app
                         span(v-for='key in Object.keys(_stage.items)') #[b {{key}}]({{_stage.items[key]}}) 
                 el-tab-pane(label='合成列表' name='syntheses')
                     p(v-if="extraOutc") 由于考虑了合成副产物的产出，可能会出现提示合成你不需要的材料的情况，在需求量较小的时候建议关闭合成副产物。
+                    p 合成共计消耗#[b 龙门币 {{gcost}}]
                     p(v-for="synthesis in syntheses") #[b {{synthesis.target}}]({{synthesis.count}}): 
                         span(v-for="key in Object.keys(synthesis.materials)") #[b {{key}}]({{synthesis.materials[key]}}) 
                 el-tab-pane(label='素材价值' name='itmvalues')
                     p(v-for='group in itmvalues') 素材等级#[b {{group.level}}]: <br/>
-                        span(v-for='value in group.values') {{value.item}}(#[b {{value.value}}]) 
+                        span(v-for='item in group.items') {{item.name}}(#[b {{item.value}}]) 
         
         el-dialog(title='杂项/设置' :visible.sync="ioVisible" width="80%")
             el-tabs(v-model="activeSetting")
@@ -121,6 +122,7 @@ export default class App extends Vue {
 
     public cost = 0;
     public gold = 0;
+    public gcost = 0;
     public exp = 0;
 
     public ioVisible = false;
@@ -146,6 +148,7 @@ export default class App extends Vue {
             const result = JSON.parse(req.responseText);
             this.cost = result.cost;
             this.gold = result.gold;
+            this.gcost = result.gcost;
             this.exp = result.exp;
             this.stages = result.stages;
             this.syntheses = result.syntheses;
