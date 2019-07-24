@@ -112,7 +112,7 @@ export default class App extends Vue {
         if (this.sortingOrder === 'byRarity') {
             return this.materialListSource.sort((a: Material, b: Material) =>  b.rarity - a.rarity);
         } else {
-            return this.materialListSource.sort((a: Material, b: Material) =>  b.id - a.id);
+            return this.materialListSource.sort((a: Material, b: Material) =>  a.sortId - b.sortId);
         }
     }
     public materialJSON = '';
