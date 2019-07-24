@@ -23,6 +23,7 @@ export const enum Legendary {
 export class Material {
     constructor(
         public id: number,
+        public sortId: number,
         public name: string,
         public rarity: number,
         public type: MaterialType,
@@ -44,7 +45,7 @@ export default function getMaterialsList(): Material[] {
     for (const key in dataMain) {
         if (dataMain[key]) {
             const dataObj = dataMain[key];
-            const material = new Material(dataObj.id, dataObj.name, dataObj.rarity, dataObj.type as MaterialType,
+            const material = new Material(dataObj.id, dataObj.sortId, dataObj.name, dataObj.rarity, dataObj.type as MaterialType,
                 require('./assets/img/' + dataObj.id.toString() + '_icon.png'));
             materialsList.push(material);
         }

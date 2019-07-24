@@ -118,7 +118,7 @@ const assemblePostData = (materialList: Material[], extra_outc_bool: any, exp_de
 })
 
 export default class App extends Vue {
-    public materialList = getMaterialsList().sort((a: Material, b: Material) =>  b.id - a.id);
+    public materialList = getMaterialsList().sort((a: Material, b: Material) =>  a.sortId - b.sortId);
     public materialJSON = '';
     public materialExportJSON = '';
     public cost = 0;
